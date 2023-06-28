@@ -42,6 +42,7 @@ include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
 file(GLOB_RECURSE LIB_PATH
+    ./lib/Basic/*.cc
     ./lib/Lexer/*.cc
   )
 list(APPEND tinyclang_SRCS ${LIB_PATH})
@@ -55,6 +56,6 @@ target_link_libraries(${STATIC_LIB_NAME}
 
 #add_subdirectory(tools)
 
-#if (TINYCLANG_OPT_BUILD_UNITTESTS)
-#  add_subdirectory(unittests #[[EXCLUDE_FROM_ALL]])
-#endif()
+if (TINYCLANG_OPT_BUILD_UNITTESTS)
+  add_subdirectory(unittests #[[EXCLUDE_FROM_ALL]])
+endif()

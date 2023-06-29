@@ -44,6 +44,8 @@ add_definitions(${LLVM_DEFINITIONS})
 file(GLOB_RECURSE LIB_PATH
     ./lib/Basic/*.cc
     ./lib/Lexer/*.cc
+    ./lib/Source/*.cc
+    ./lib/Diagnostic/*.cc
   )
 list(APPEND tinyclang_SRCS ${LIB_PATH})
 

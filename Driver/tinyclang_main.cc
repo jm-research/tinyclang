@@ -16,8 +16,6 @@ using namespace tinyclang;
 //===----------------------------------------------------------------------===//
 
 static cl::opt<bool> Verbose("v", cl::desc("Enable verbose output"));
-static cl::opt<bool> Stats(
-    "stats", cl::desc("Print performance metrics and statistics"));
 
 enum ProgActions {
   RunPreprocessorOnly,     // Just lex, no output.
@@ -89,8 +87,8 @@ void DiagnosticPrinterSTDERR::PrintIncludeStack(SourceLocation Pos) {
   unsigned LineNo = SourceMgr.getLineNumber(Pos);
 
   const llvm::MemoryBuffer* Buffer = SourceMgr.getBuffer(FileID);
-  std::cerr << "In file included from " << Buffer->getBufferIdentifier().str() << ":"
-            << LineNo << ":\n";
+  std::cerr << "In file included from " << Buffer->getBufferIdentifier().str()
+            << ":" << LineNo << ":\n";
 }
 
 void DiagnosticPrinterSTDERR::HandleDiagnostic(Diagnostic::Level Level,
@@ -621,7 +619,11 @@ static cl::opt<std::string> InputFilename(cl::Positional,
 void PrintIdentStats();
 
 int main(int argc, char** argv) {
-  cl::ParseCommandLineOptions(argc, argv, " tinyclang\n");
+  std::vector<const char*> Args;
+  for (const char* A : llvm::ArrayRef(argv, argc))
+    Args.push_back(A);
+
+  cl::ParseCommandLineOptions((int)Args.size(), Args.data(), " tinyclang\n");
   sys::PrintStackTraceOnErrorSignal(argv[0]);
 
   /// Create a SourceManager object.  This tracks and owns all the file buffers
@@ -669,8 +671,10 @@ int main(int argc, char** argv) {
     // Memory buffer must end with a null byte!
     PrologMacros.push_back(0);
 
-    llvm::MemoryBuffer* SB = llvm::MemoryBuffer::getMemBuffer(
-        &PrologMacros.front(), &PrologMacros.back(), "<predefines>").get();
+    llvm::MemoryBuffer* SB =
+        llvm::MemoryBuffer::getMemBuffer(&PrologMacros.front(),
+                                         &PrologMacros.back(), "<predefines>")
+            .get();
     assert(SB && "Cannot fail to create predefined source buffer");
     unsigned FileID = SourceMgr.createFileIDForMemBuffer(SB);
     assert(FileID && "Could not create FileID for predefines?");
@@ -732,12 +736,10 @@ int main(int argc, char** argv) {
     }
   }
 
-  if (Stats) {
-    // Printed from low-to-high level.
-    PP.getFileManager().PrintStats();
-    PP.getSourceManager().PrintStats();
-    PP.getIdentifierTable().PrintStats();
-    PP.PrintStats();
-    std::cerr << "\n";
-  }
+  // Printed from low-to-high level.
+  PP.getFileManager().PrintStats();
+  PP.getSourceManager().PrintStats();
+  PP.getIdentifierTable().PrintStats();
+  PP.PrintStats();
+  std::cerr << "\n";
 }

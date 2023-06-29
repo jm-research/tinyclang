@@ -56,7 +56,7 @@ target_link_libraries(${STATIC_LIB_NAME}
   LLVMCore
 )
 
-#add_subdirectory(tools)
+add_subdirectory(Driver)
 
 if (TINYCLANG_OPT_BUILD_UNITTESTS)
   add_subdirectory(unittests #[[EXCLUDE_FROM_ALL]])

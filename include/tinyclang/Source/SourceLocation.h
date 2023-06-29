@@ -11,20 +11,21 @@ class SourceLocation {
 
   /// SourceLocation constructor - Create a new SourceLocation object with the
   /// specified FileID and FilePos.
-  SourceLocation(unsigned FileID, unsigned FilePos) {
+  SourceLocation(unsigned file_id, unsigned file_pos) {
     // If a FilePos is larger than (1<<FilePosBits), the SourceManager makes
     // enough consequtive FileIDs that we have one for each chunk.
-    if (FilePos >= (1 << FilePosBits)) {
-      FileID += FilePos >> FilePosBits;
-      FilePos &= (1 << FilePosBits) - 1;
+    if (file_pos >= (1 << FilePosBits)) {
+      file_id += file_pos >> FilePosBits;
+      file_pos &= (1 << FilePosBits) - 1;
     }
 
     // FIXME: Find a way to handle out of FileID bits!  Maybe MaxFileID is an
     // escape of some sort?
-    if (FileID >= (1 << FileIDBits))
-      FileID = (1 << FileIDBits) - 1;
+    if (file_id >= (1 << FileIDBits)) {
+      file_id = (1 << FileIDBits) - 1;
+    }
 
-    ID = (FileID << FilePosBits) | FilePos;
+    ID = (file_id << FilePosBits) | file_pos;
   }
 
   /// isValid - Return true if this is a valid SourceLocation object.  Invalid
@@ -52,22 +53,22 @@ class SourceLocation {
 
   /// getFromRawEncoding - Turn a raw encoding of a SourceLocation object into
   /// a real SourceLocation.
-  static SourceLocation getFromRawEncoding(unsigned Encoding) {
-    SourceLocation X;
-    X.ID = Encoding;
-    return X;
+  static SourceLocation getFromRawEncoding(unsigned encoding) {
+    SourceLocation x;
+    x.ID = encoding;
+    return x;
   }
 
  private:
   unsigned ID;
 };
 
-inline bool operator==(const SourceLocation& LHS, const SourceLocation& RHS) {
-  return LHS.getRawEncoding() == RHS.getRawEncoding();
+inline bool operator==(const SourceLocation& lhs, const SourceLocation& rhs) {
+  return lhs.getRawEncoding() == rhs.getRawEncoding();
 }
 
-inline bool operator!=(const SourceLocation& LHS, const SourceLocation& RHS) {
-  return !(LHS == RHS);
+inline bool operator!=(const SourceLocation& lhs, const SourceLocation& rhs) {
+  return !(lhs == rhs);
 }
 
 }  // namespace tinyclang

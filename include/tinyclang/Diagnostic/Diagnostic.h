@@ -6,7 +6,6 @@
 namespace tinyclang {
 
 class DiagnosticClient;
-class SourceBuffer;
 class SourceLocation;
 
 // Import the diagnostic enums themselves.
